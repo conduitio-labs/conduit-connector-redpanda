@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package repanda contains implementations for Redpanda source and destination
+// Package redpanda contains implementations for Redpanda source and destination
 // connectors for Conduit.
 package redpanda
 
