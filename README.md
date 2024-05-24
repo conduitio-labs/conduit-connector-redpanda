@@ -1,4 +1,5 @@
 # Conduit Connector Redpanda
+![scarf pixel](https://static.scarf.sh/a.png?x-pxid=e23965a3-5aeb-4d19-9640-7cbc8c96df06)
 
 The Redpanda connector is fork of the [Conduit](https://github.com/ConduitIO/conduit) built-in Kafka connector. It provides both, a
 source and a destination connector for [Redpanda](https://redpanda.com/).
