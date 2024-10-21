@@ -20,7 +20,7 @@ import (
 
 	"github.com/conduitio-labs/conduit-connector-redpanda/source"
 	"github.com/conduitio-labs/conduit-connector-redpanda/test"
-	sdk "github.com/conduitio/conduit-connector-sdk"
+	"github.com/conduitio/conduit-commons/opencdc"
 	"github.com/matryer/is"
 	"github.com/twmb/franz-go/pkg/kgo"
 )
@@ -68,10 +68,10 @@ func TestSource_Integration_RestartPartial(t *testing.T) {
 func testSourceIntegrationRead(
 	t *testing.T,
 	cfgMap map[string]string,
-	startFrom sdk.Position,
+	startFrom opencdc.Position,
 	wantRecords []*kgo.Record,
 	ackFirstOnly bool,
-) sdk.Position {
+) opencdc.Position {
 	is := is.New(t)
 	ctx := context.Background()
 
@@ -86,7 +86,7 @@ func testSourceIntegrationRead(
 	err = underTest.Open(ctx, startFrom)
 	is.NoErr(err)
 
-	var positions []sdk.Position
+	var positions []opencdc.Position
 	for _, wantRecord := range wantRecords {
 		rec, err := underTest.Read(ctx)
 		is.NoErr(err)

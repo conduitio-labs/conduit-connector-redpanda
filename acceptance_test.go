@@ -21,6 +21,7 @@ import (
 
 	"github.com/conduitio-labs/conduit-connector-redpanda/source"
 	"github.com/conduitio-labs/conduit-connector-redpanda/test"
+	"github.com/conduitio/conduit-commons/opencdc"
 	sdk "github.com/conduitio/conduit-connector-sdk"
 	"github.com/google/uuid"
 )
@@ -72,13 +73,13 @@ type AcceptanceTestDriver struct {
 
 // ReadFromDestination is overwritten because the source connector uses a consumer
 // group which results in slow reads. This speeds up the destination tests.
-func (d AcceptanceTestDriver) ReadFromDestination(t *testing.T, records []sdk.Record) []sdk.Record {
+func (d AcceptanceTestDriver) ReadFromDestination(t *testing.T, records []opencdc.Record) []opencdc.Record {
 	cfg := test.ParseConfigMap[source.Config](t, d.SourceConfig(t))
 	kgoRecs := test.Consume(t, cfg.Servers, cfg.Topics[0], len(records))
 
-	recs := make([]sdk.Record, len(kgoRecs))
+	recs := make([]opencdc.Record, len(kgoRecs))
 	for i, rec := range kgoRecs {
-		metadata := sdk.Metadata{}
+		metadata := opencdc.Metadata{}
 		metadata.SetCollection(rec.Topic)
 		metadata.SetCreatedAt(rec.Timestamp)
 
@@ -90,8 +91,8 @@ func (d AcceptanceTestDriver) ReadFromDestination(t *testing.T, records []sdk.Re
 				Offset:    rec.Offset,
 			}.ToSDKPosition(),
 			metadata,
-			sdk.RawData(rec.Key),
-			sdk.RawData(rec.Value),
+			opencdc.RawData(rec.Key),
+			opencdc.RawData(rec.Value),
 		)
 	}
 	return recs

@@ -20,6 +20,8 @@ import (
 	"strings"
 
 	"github.com/conduitio-labs/conduit-connector-redpanda/destination"
+	"github.com/conduitio/conduit-commons/config"
+	"github.com/conduitio/conduit-commons/opencdc"
 	sdk "github.com/conduitio/conduit-connector-sdk"
 )
 
@@ -34,14 +36,14 @@ func NewDestination() sdk.Destination {
 	return sdk.DestinationWithMiddleware(&Destination{}, sdk.DefaultDestinationMiddleware()...)
 }
 
-func (d *Destination) Parameters() map[string]sdk.Parameter {
+func (d *Destination) Parameters() config.Parameters {
 	return destination.Config{}.Parameters()
 }
 
-func (d *Destination) Configure(_ context.Context, cfg map[string]string) error {
+func (d *Destination) Configure(ctx context.Context, cfg config.Config) error {
 	var config destination.Config
 
-	err := sdk.Util.ParseConfig(cfg, &config)
+	err := sdk.Util.ParseConfig(ctx, cfg, &config, NewDestination().Parameters())
 	if err != nil {
 		return err
 	}
@@ -50,7 +52,7 @@ func (d *Destination) Configure(_ context.Context, cfg map[string]string) error 
 		return err
 	}
 
-	recordFormat := cfg[sdk.DestinationWithRecordFormat{}.RecordFormatParameterName()]
+	recordFormat := cfg[sdk.DestinationWithRecordFormatConfig{}.RecordFormatParameterName()]
 	if recordFormat != "" {
 		recordFormatType, _, _ := strings.Cut(recordFormat, "/")
 		if recordFormatType == (sdk.DebeziumConverter{}.Name()) {
@@ -76,7 +78,7 @@ func (d *Destination) Open(ctx context.Context) error {
 	return nil
 }
 
-func (d *Destination) Write(ctx context.Context, records []sdk.Record) (int, error) {
+func (d *Destination) Write(ctx context.Context, records []opencdc.Record) (int, error) {
 	return d.producer.Produce(ctx, records)
 }
 
