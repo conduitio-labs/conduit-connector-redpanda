@@ -1,4 +1,33 @@
-# Conduit Connector Redpanda
+# Conduit Connector Redpanda (archived)
+
+> [!IMPORTANT]
+> This connector is archived. Use the [Kafka connector](https://github.com/ConduitIO/conduit-connector-kafka)
+> instead: it is built into Conduit and its CI runs the full integration and acceptance suites against both
+> Apache Kafka and Redpanda.
+
+## Moving to the Kafka connector
+
+This connector is a 2024 fork of the Kafka connector, and its configuration is a subset of the Kafka connector's.
+To switch a pipeline:
+
+- Change the plugin from `redpanda` (standalone) to `builtin:kafka`. Keep `servers`, `topics`, `groupID`,
+  `readFromBeginning`, `retryGroupJoinErrors`, the TLS (`clientCert`, `clientKey`, `caCert`, `insecureSkipVerify`)
+  and SASL (`saslMechanism`, `saslUsername`, `saslPassword`) settings, and the destination's `topic`, `acks`,
+  `deliveryTimeout`, `batchBytes` and `compression` as they are.
+- Replace the deprecated source parameter `topic` with `topics`. The Kafka connector no longer accepts `topic` on
+  the source.
+- The default `clientID` changes from `conduit-connector-redpanda` to `conduit-connector-kafka`. Set `clientID`
+  explicitly if quotas or ACLs depend on it.
+- Source positions store the consumer group ID in both connectors, so keep the same `groupID` to resume from the
+  committed offsets.
+- The Kafka source adds `commitOffsetsSize` and `commitOffsetsDelay` to tune offset commit batching.
+
+Nothing in this connector is Redpanda-specific: Redpanda speaks the Kafka protocol, and both connectors use the
+same client library (franz-go).
+
+The original README follows for reference.
+
+---
 ![scarf pixel](https://static.scarf.sh/a.png?x-pxid=e23965a3-5aeb-4d19-9640-7cbc8c96df06)
 
 The Redpanda connector is fork of the [Conduit](https://github.com/ConduitIO/conduit) built-in Kafka connector. It provides both, a
